@@ -6,7 +6,7 @@ INSERT INTO users (name, email) VALUES
     ('Леонид Тараканов', 'leonid@example.com'),
     ('Анна Смирнова', 'anna@example.com'),
     ('Илья Волков', 'ilya@example.com')
-ON CONFLICT (email) DO UPDATE SET name = EXCLUDED.name;
+ON CONFLICT (email) DO NOTHING;
 
 INSERT INTO blog_posts
     (author_id, title, slug, content, status, created_at, published_at)
@@ -51,12 +51,6 @@ VALUES
      'Подготовка к защите', 'project-defense',
      'Список ключевых решений, которые нужно объяснить на защите.',
      'DRAFT', CURRENT_TIMESTAMP - INTERVAL '2 days', NULL)
-ON CONFLICT (slug) DO UPDATE SET
-    author_id = EXCLUDED.author_id,
-    title = EXCLUDED.title,
-    content = EXCLUDED.content,
-    status = EXCLUDED.status,
-    created_at = EXCLUDED.created_at,
-    published_at = EXCLUDED.published_at;
+ON CONFLICT (slug) DO NOTHING;
 
 COMMIT;

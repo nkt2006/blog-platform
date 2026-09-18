@@ -16,8 +16,9 @@ import ru.mirea.blogplatform.support.InMemoryUserRepository;
 class ConsoleUiTest {
     @Test
     void invalidInputDoesNotCloseMenu() {
-        BlogPostService service = new BlogPostService(
-                new InMemoryPostRepository(), new InMemoryUserRepository());
+        InMemoryPostRepository posts = new InMemoryPostRepository();
+        InMemoryUserRepository users = new InMemoryUserRepository();
+        BlogPostService service = new BlogPostService(posts, users);
         ByteArrayOutputStream buffer = new ByteArrayOutputStream();
         Scanner input = new Scanner("не число\n3\nabc\n99\n0\n");
         PrintStream output = new PrintStream(buffer, true, StandardCharsets.UTF_8);

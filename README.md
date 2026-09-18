@@ -1,6 +1,6 @@
 # Блог-платформа — КР №1
 
-Консольное Java-приложение для работы с публикациями блога. Сейчас в `main` находится общая основа проекта; интерфейс, бизнес-логика, JDBC и экспорт будут добавлены в отдельных ветках.
+Консольное Java-приложение для работы с публикациями блога. Архитектура: `ConsoleUi → BlogPostService → интерфейсы репозиториев → JDBC → PostgreSQL`. Экспорт `.xlsx` выполняется через Apache POI.
 
 ## Общий контракт
 
@@ -13,18 +13,20 @@
 - Поиск, фильтрация, сортировка и статистика находятся в сервисе, который получает данные через интерфейсы репозиториев. SQL пишется только в JDBC-реализациях.
 - Проверка бизнес-правил находится в сервисе; ограничения `PRIMARY KEY`, `FOREIGN KEY`, `NOT NULL` и `UNIQUE` дополнительно защищают данные в БД.
 
-## Структура работы
+## Состав проекта
 
-| Ветка | Ответственность |
+| Компонент | Ответственность |
 | --- | --- |
-| `feature/service-console` | сервис, бизнес-правила, поиск/фильтры/сортировки/статистика, консольное меню, обработка ошибок ввода |
-| `feature/database-export` | SQL-схема и начальные данные, JDBC-реализации репозиториев, экспорт `.xlsx`, ER-диаграмма, инструкция запуска |
+| `ConsoleUi` | циклическое меню, ввод, вывод, обработка ошибок |
+| `BlogPostService` | бизнес-правила, CRUD, поиск, фильтры, сортировки и статистика |
+| `JdbcUserRepository`, `JdbcBlogPostRepository` | параметризованные SQL-запросы и преобразование строк БД в объекты |
+| `ExcelExporter` | экспорт авторов и публикаций в Excel |
 
-После объединения веток необходимо проверить запуск с чистой БД и все операции из задания. Для сборки потребуется JDK 17 и Maven; команда проверки: `mvn test`.
+Подробные правила сервиса описаны в [`docs/service-console.md`](docs/service-console.md), ER-диаграмма — в [`docs/er-diagram.md`](docs/er-diagram.md).
 
 ## Настройка PostgreSQL
 
-По умолчанию приложение подключается к `jdbc:postgresql://localhost:5432/blog_platform` с пользователем `postgres` и паролем `postgres`. Настройки можно переопределить переменными окружения:
+Для запуска нужны JDK 17, Maven и PostgreSQL. По умолчанию приложение подключается к `jdbc:postgresql://localhost:5432/blog_platform` с пользователем `postgres` и паролем `postgres`. Настройки можно переопределить переменными окружения:
 
 ```shell
 export BLOG_DB_URL='jdbc:postgresql://localhost:5432/blog_platform'
@@ -40,7 +42,15 @@ psql -U postgres -d blog_platform -f src/main/resources/db/schema.sql
 psql -U postgres -d blog_platform -f src/main/resources/db/seed.sql
 ```
 
-Оба SQL-скрипта можно запускать повторно: таблицы создаются через `IF NOT EXISTS`, а тестовые записи обновляются по уникальным email и slug. Начальный набор содержит 5 авторов, 10 публикаций и четыре статуса.
+Оба SQL-скрипта можно запускать повторно: таблицы создаются через `IF NOT EXISTS`, а уже существующие записи начального набора не перезаписываются. Начальный набор содержит 5 авторов, 10 публикаций и четыре статуса.
+
+Запуск приложения из корня проекта:
+
+```shell
+mvn compile exec:java
+```
+
+Пункт `15` меню создаёт Excel-файл. Если оставить путь пустым, он будет сохранён в `exports/blog-platform.xlsx`. Образец экспорта начальных данных находится в `docs/sample-blog-platform.xlsx`.
 
 ## JDBC и экспорт
 
@@ -49,20 +59,7 @@ psql -U postgres -d blog_platform -f src/main/resources/db/seed.sql
 - `JdbcBlogPostRepository` реализует CRUD публикаций и проверки уникальности slug.
 - Все запросы используют `PreparedStatement` и `try-with-resources`.
 - `ExcelExporter` получает данные через интерфейсы репозиториев и создаёт книгу с листами `Авторы` и `Публикации`.
-
-Пример подключения компонентов:
-
-```java
-DatabaseManager databaseManager = new DatabaseManager();
-UserRepository userRepository = new JdbcUserRepository(databaseManager);
-BlogPostRepository postRepository = new JdbcBlogPostRepository(databaseManager);
-
-ExcelExporter exporter = new ExcelExporter(userRepository, postRepository);
-Path file = exporter.export(Path.of("exports/blog-platform.xlsx"));
-System.out.println("Данные сохранены: " + file);
-```
-
-ER-диаграмма находится в [`docs/er-diagram.md`](docs/er-diagram.md).
+- `Main` соединяет компоненты и запускает меню.
 
 ## Проверка
 
@@ -70,4 +67,13 @@ ER-диаграмма находится в [`docs/er-diagram.md`](docs/er-diagr
 mvn clean test
 ```
 
-После объединения с `feature/service-console` нужно проверить полный сценарий на чистой базе: создание, чтение, изменение и удаление публикаций, обработку неверного ввода, поиск, фильтрацию, сортировку, статистику и формирование `.xlsx`.
+Для запуска также JDBC-интеграционного теста нужна отдельная тестовая база с применёнными `schema.sql` и `seed.sql`:
+
+```shell
+export BLOG_TEST_DB_URL='jdbc:postgresql://localhost:5432/blog_platform_test'
+export BLOG_TEST_DB_USER='postgres'
+export BLOG_TEST_DB_PASSWORD='postgres'
+mvn clean test
+```
+
+Если `BLOG_TEST_DB_URL` не задан, JDBC-интеграционный тест пропускается; остальные тесты работают без БД.

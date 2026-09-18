@@ -1,6 +1,7 @@
 package ru.mirea.blogplatform.console;
 
 import java.io.PrintStream;
+import java.nio.file.Path;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
@@ -71,8 +72,17 @@ public class ConsoleUi {
             case 12 -> changeStatus();
             case 13 -> printStatistics();
             case 14 -> printUsers();
+            case 15 -> exportExcel();
             default -> output.println("Такого пункта нет.");
         }
+    }
+
+    private void exportExcel() {
+        String file = readLine("Путь к Excel-файлу [exports/blog-platform.xlsx]: ").strip();
+        Path destination = file.isEmpty()
+                ? Path.of("exports", "blog-platform.xlsx") : Path.of(file);
+        Path saved = service.exportToExcel(destination);
+        output.println("Excel-файл сохранён: " + saved);
     }
 
     private void createPost() {
@@ -228,6 +238,7 @@ public class ConsoleUi {
         output.println("12. Изменить статус");
         output.println("13. Статистика");
         output.println("14. Показать авторов");
+        output.println("15. Экспорт в Excel (.xlsx)");
         output.println(" 0. Выход");
     }
 }

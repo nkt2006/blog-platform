@@ -1,5 +1,6 @@
 package ru.mirea.blogplatform.service;
 
+import java.nio.file.Path;
 import java.time.Clock;
 import java.time.LocalDateTime;
 import java.util.Comparator;
@@ -15,11 +16,13 @@ import ru.mirea.blogplatform.model.PostStatus;
 import ru.mirea.blogplatform.model.User;
 import ru.mirea.blogplatform.repository.BlogPostRepository;
 import ru.mirea.blogplatform.repository.UserRepository;
+import ru.mirea.blogplatform.util.ExcelExporter;
 
 public class BlogPostService {
     private final BlogPostRepository posts;
     private final UserRepository users;
     private final Clock clock;
+    private final ExcelExporter exporter;
 
     public BlogPostService(BlogPostRepository posts, UserRepository users) {
         this(posts, users, Clock.systemDefaultZone());
@@ -29,6 +32,7 @@ public class BlogPostService {
         this.posts = Objects.requireNonNull(posts);
         this.users = Objects.requireNonNull(users);
         this.clock = Objects.requireNonNull(clock);
+        this.exporter = new ExcelExporter(users, posts);
     }
 
     public BlogPost createPost(long authorId, String title, String slug, String content) {
@@ -94,6 +98,10 @@ public class BlogPostService {
 
     public List<User> listUsers() {
         return users.findAll();
+    }
+
+    public Path exportToExcel(Path file) {
+        return exporter.export(file);
     }
 
     public void deletePost(long id) {
