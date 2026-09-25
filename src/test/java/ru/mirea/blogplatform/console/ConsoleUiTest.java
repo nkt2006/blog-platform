@@ -39,8 +39,8 @@ class ConsoleUiTest {
         BlogPostService service = new BlogPostService(posts, users);
         String commands = String.join("\n",
                 "1", "1", "Первый пост", "first-post", "Текст",
-                "12", "1", "REVIEW",
-                "12", "1", "PUBLISHED",
+                "12", "1", "На проверке",
+                "12", "1", "Опубликована",
                 "4", "1", "", "Обновлённый заголовок", "", "",
                 "13", "5", "1", "да", "0", "");
         ByteArrayOutputStream buffer = new ByteArrayOutputStream();
@@ -51,6 +51,7 @@ class ConsoleUiTest {
         String printed = buffer.toString(StandardCharsets.UTF_8);
         assertTrue(printed.contains("Создан черновик с ID 1."));
         assertTrue(printed.contains("Публикация обновлена."));
+        assertTrue(printed.contains("Новый статус публикации 1: Опубликована"));
         assertTrue(printed.contains("Опубликованных: 1"));
         assertTrue(printed.contains("Публикация удалена."));
         assertEquals(0, posts.findAll().size());

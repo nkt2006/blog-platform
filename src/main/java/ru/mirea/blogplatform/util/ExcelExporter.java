@@ -38,12 +38,16 @@ public class ExcelExporter {
             UserRepository userRepository,
             BlogPostRepository blogPostRepository
     ) {
-        this.userRepository = Objects.requireNonNull(userRepository);
-        this.blogPostRepository = Objects.requireNonNull(blogPostRepository);
+        this.userRepository = Objects.requireNonNull(
+                userRepository, "Репозиторий авторов не указан"
+        );
+        this.blogPostRepository = Objects.requireNonNull(
+                blogPostRepository, "Репозиторий публикаций не указан"
+        );
     }
 
     public Path export(Path outputFile) {
-        Objects.requireNonNull(outputFile, "Output file must not be null");
+        Objects.requireNonNull(outputFile, "Файл экспорта не указан");
         Path absoluteOutput = outputFile.toAbsolutePath().normalize();
 
         try {
@@ -102,7 +106,7 @@ public class ExcelExporter {
             setLong(row, 1, post.getAuthorId());
             row.createCell(2).setCellValue(post.getTitle());
             row.createCell(3).setCellValue(post.getSlug());
-            row.createCell(4).setCellValue(post.getStatus().name());
+            row.createCell(4).setCellValue(post.getStatus().getDisplayName());
             setDateTime(row, 5, post.getCreatedAt(), dateTimeStyle);
             setDateTime(row, 6, post.getPublishedAt(), dateTimeStyle);
             row.createCell(7).setCellValue(post.getContent());

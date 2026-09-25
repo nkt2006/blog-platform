@@ -60,6 +60,10 @@ class ExcelExporterTest {
                     "first-post",
                     workbook.getSheet("Публикации").getRow(1).getCell(3).getStringCellValue()
             );
+            assertEquals(
+                    "Опубликована",
+                    workbook.getSheet("Публикации").getRow(1).getCell(4).getStringCellValue()
+            );
         }
     }
 

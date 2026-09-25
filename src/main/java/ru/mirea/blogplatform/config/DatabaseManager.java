@@ -24,8 +24,8 @@ public final class DatabaseManager {
     }
 
     public DatabaseManager(String url, String user, String password) {
-        this.url = requireValue(url, "Database URL");
-        this.user = requireValue(user, "Database user");
+        this.url = requireValue(url, "Адрес базы данных");
+        this.user = requireValue(user, "Пользователь базы данных");
         this.password = password == null ? "" : password;
     }
 
@@ -47,7 +47,7 @@ public final class DatabaseManager {
 
     private static String requireValue(String value, String fieldName) {
         if (value == null || value.isBlank()) {
-            throw new IllegalArgumentException(fieldName + " must not be blank");
+            throw new IllegalArgumentException(fieldName + " не может быть пустым.");
         }
         return value;
     }

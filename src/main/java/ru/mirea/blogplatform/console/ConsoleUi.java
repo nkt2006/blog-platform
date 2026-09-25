@@ -124,10 +124,12 @@ public class ConsoleUi {
 
     private void changeStatus() {
         long id = readPositiveLong("ID публикации: ");
-        output.println("Текущий статус: " + service.getPostById(id).getStatus());
+        output.println("Текущий статус: "
+                + service.getPostById(id).getStatus().getDisplayName());
         PostStatus next = readStatus("Новый статус: ");
         BlogPost post = service.changeStatus(id, next);
-        output.println("Новый статус публикации " + post.getId() + ": " + post.getStatus());
+        output.println("Новый статус публикации " + post.getId() + ": "
+                + post.getStatus().getDisplayName());
     }
 
     private void printPosts(List<BlogPost> posts) {
@@ -141,7 +143,8 @@ public class ConsoleUi {
             User author = usersById.get(post.getAuthorId());
             String authorName = author == null ? "ID " + post.getAuthorId() : author.getName();
             output.printf("#%d | %s | %s | %s | создано %s%n",
-                    post.getId(), post.getTitle(), authorName, post.getStatus(),
+                    post.getId(), post.getTitle(), authorName,
+                    post.getStatus().getDisplayName(),
                     formatDate(post.getCreatedAt()));
         }
         output.println("Всего: " + posts.size());
@@ -152,7 +155,7 @@ public class ConsoleUi {
         output.println("Заголовок: " + post.getTitle());
         output.println("Адрес публикации: " + post.getSlug());
         output.println("ID автора: " + post.getAuthorId());
-        output.println("Статус: " + post.getStatus());
+        output.println("Статус: " + post.getStatus().getDisplayName());
         output.println("Создано: " + formatDate(post.getCreatedAt()));
         output.println("Опубликовано: " + formatDate(post.getPublishedAt()));
         output.println("Текст: " + post.getContent());
@@ -203,12 +206,12 @@ public class ConsoleUi {
     }
 
     private PostStatus readStatus(String prompt) {
-        output.println("Варианты: DRAFT, REVIEW, PUBLISHED, ARCHIVED");
-        String value = readLine(prompt).strip().toUpperCase(Locale.ROOT);
+        output.println("Варианты: Черновик, На проверке, Опубликована, В архиве");
+        String value = readLine(prompt).strip();
         try {
-            return PostStatus.valueOf(value);
+            return PostStatus.fromUserInput(value);
         } catch (IllegalArgumentException ex) {
-            throw new BusinessRuleException("Неизвестный статус: " + value);
+            throw new BusinessRuleException(ex.getMessage());
         }
     }
 
