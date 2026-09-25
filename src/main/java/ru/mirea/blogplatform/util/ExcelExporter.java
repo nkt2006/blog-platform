@@ -27,7 +27,7 @@ import ru.mirea.blogplatform.repository.UserRepository;
 public class ExcelExporter {
     private static final String[] USER_HEADERS = {"ID", "Имя", "Email"};
     private static final String[] POST_HEADERS = {
-            "ID", "ID автора", "Заголовок", "Slug", "Статус",
+            "ID", "ID автора", "Заголовок", "Адрес публикации", "Статус",
             "Создано", "Опубликовано", "Содержимое"
     };
 

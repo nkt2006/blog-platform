@@ -91,7 +91,7 @@ public class ConsoleUi {
         printUsers();
         long authorId = readPositiveLong("ID автора: ");
         String title = readLine("Заголовок: ");
-        String slug = readLine("Slug (буквы, цифры, дефисы): ");
+        String slug = readLine("Адрес публикации (буквы, цифры, дефисы): ");
         String content = readLine("Текст публикации: ");
         BlogPost post = service.createPost(authorId, title, slug, content);
         output.println("Создан черновик с ID " + post.getId() + ".");
@@ -105,7 +105,7 @@ public class ConsoleUi {
         String authorInput = readLine("ID автора [" + current.getAuthorId() + "]: ");
         long authorId = authorInput.isBlank() ? current.getAuthorId() : parsePositiveLong(authorInput);
         String title = readOrKeep("Заголовок", current.getTitle());
-        String slug = readOrKeep("Slug", current.getSlug());
+        String slug = readOrKeep("Адрес публикации", current.getSlug());
         String content = readOrKeep("Текст", current.getContent());
         service.updatePost(id, authorId, title, slug, content);
         output.println("Публикация обновлена.");
@@ -150,7 +150,7 @@ public class ConsoleUi {
     private void printDetails(BlogPost post) {
         output.println("ID: " + post.getId());
         output.println("Заголовок: " + post.getTitle());
-        output.println("Slug: " + post.getSlug());
+        output.println("Адрес публикации: " + post.getSlug());
         output.println("ID автора: " + post.getAuthorId());
         output.println("Статус: " + post.getStatus());
         output.println("Создано: " + formatDate(post.getCreatedAt()));

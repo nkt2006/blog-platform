@@ -53,6 +53,10 @@ class ExcelExporterTest {
             assertEquals("Публикации", workbook.getSheetAt(1).getSheetName());
             assertEquals("Автор", workbook.getSheet("Авторы").getRow(1).getCell(1).getStringCellValue());
             assertEquals(
+                    "Адрес публикации",
+                    workbook.getSheet("Публикации").getRow(0).getCell(3).getStringCellValue()
+            );
+            assertEquals(
                     "first-post",
                     workbook.getSheet("Публикации").getRow(1).getCell(3).getStringCellValue()
             );
