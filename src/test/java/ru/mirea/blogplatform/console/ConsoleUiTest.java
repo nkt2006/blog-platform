@@ -26,7 +26,7 @@ class ConsoleUiTest {
         new ConsoleUi(service, input, output).run();
 
         String printed = buffer.toString(StandardCharsets.UTF_8);
-        assertTrue(printed.contains("Ошибка:"));
+        assertTrue(printed.contains("Ошибка: введите целое число."));
         assertTrue(printed.contains("Такого пункта нет."));
         assertTrue(printed.contains("До свидания!"));
     }

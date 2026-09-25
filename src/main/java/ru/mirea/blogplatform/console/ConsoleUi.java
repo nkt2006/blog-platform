@@ -46,6 +46,8 @@ public class ConsoleUi {
             } catch (NoSuchElementException ex) {
                 output.println("\nВвод закрыт. Программа завершена.");
                 return;
+            } catch (NumberFormatException ex) {
+                output.println("Ошибка: введите целое число.");
             } catch (BlogPlatformException | IllegalArgumentException ex) {
                 output.println("Ошибка: " + ex.getMessage());
             } catch (RuntimeException ex) {
