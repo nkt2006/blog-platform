@@ -70,8 +70,10 @@ public class BlogPostService {
     public BlogPost changeStatus(long id, PostStatus nextStatus) {
         BlogPost current = getPostById(id);
         if (nextStatus == null || !isAllowedTransition(current.getStatus(), nextStatus)) {
+            String nextStatusName = nextStatus == null
+                    ? "не указан" : nextStatus.getDisplayName();
             throw new BusinessRuleException("Недопустимый переход статуса: "
-                    + current.getStatus() + " → " + nextStatus + ".");
+                    + current.getStatus().getDisplayName() + " → " + nextStatusName + ".");
         }
         if (nextStatus == PostStatus.PUBLISHED) {
             requireText(current.getContent(), "Текст публикации");
