@@ -151,7 +151,7 @@ public class JdbcBlogPostRepository implements BlogPostRepository {
             statement.setString(1, slug);
             return readExists(statement);
         } catch (SQLException exception) {
-            throw new DatabaseException("Не удалось проверить уникальность slug", exception);
+            throw new DatabaseException("Не удалось проверить уникальность адреса публикации", exception);
         }
     }
 
@@ -163,7 +163,7 @@ public class JdbcBlogPostRepository implements BlogPostRepository {
             statement.setLong(2, excludedId);
             return readExists(statement);
         } catch (SQLException exception) {
-            throw new DatabaseException("Не удалось проверить уникальность slug", exception);
+            throw new DatabaseException("Не удалось проверить уникальность адреса публикации", exception);
         }
     }
 

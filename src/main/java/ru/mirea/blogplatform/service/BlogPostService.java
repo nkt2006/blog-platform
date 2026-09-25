@@ -41,7 +41,7 @@ public class BlogPostService {
         String validContent = requireText(content, "Текст публикации");
         String validSlug = requireSlug(slug);
         if (posts.existsBySlug(validSlug)) {
-            throw new BusinessRuleException("Публикация с таким slug уже существует.");
+            throw new BusinessRuleException("Публикация с таким адресом уже существует.");
         }
 
         BlogPost post = new BlogPost(null, authorId, validTitle, validSlug, validContent,
@@ -56,7 +56,7 @@ public class BlogPostService {
         String validContent = requireText(content, "Текст публикации");
         String validSlug = requireSlug(slug);
         if (posts.existsBySlugAndIdNot(validSlug, id)) {
-            throw new BusinessRuleException("Публикация с таким slug уже существует.");
+            throw new BusinessRuleException("Публикация с таким адресом уже существует.");
         }
 
         BlogPost updated = new BlogPost(id, authorId, validTitle, validSlug, validContent,
@@ -184,9 +184,11 @@ public class BlogPostService {
     }
 
     private String requireSlug(String value) {
-        String slug = requireText(value, "Slug").toLowerCase(Locale.ROOT);
+        String slug = requireText(value, "Адрес публикации").toLowerCase(Locale.ROOT);
         if (!slug.matches("[\\p{L}\\p{N}]+(?:-[\\p{L}\\p{N}]+)*")) {
-            throw new BusinessRuleException("Slug может содержать буквы, цифры и дефисы между словами.");
+            throw new BusinessRuleException(
+                    "Адрес публикации может содержать буквы, цифры и дефисы между словами."
+            );
         }
         return slug;
     }

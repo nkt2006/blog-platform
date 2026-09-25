@@ -56,7 +56,7 @@ mvn compile exec:java
 
 - `DatabaseManager` создаёт подключения с настройками из окружения.
 - `JdbcUserRepository` читает авторов.
-- `JdbcBlogPostRepository` реализует CRUD публикаций и проверки уникальности slug.
+- `JdbcBlogPostRepository` реализует CRUD публикаций и проверяет уникальность адреса публикации (`slug` в коде и БД).
 - Все запросы используют `PreparedStatement` и `try-with-resources`.
 - `ExcelExporter` получает данные через интерфейсы репозиториев и создаёт книгу с листами `Авторы` и `Публикации`.
 - `Main` соединяет компоненты и запускает меню.

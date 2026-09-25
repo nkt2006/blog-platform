@@ -37,7 +37,7 @@ VALUES
      'REVIEW', CURRENT_TIMESTAMP - INTERVAL '8 days', NULL),
     ((SELECT id FROM users WHERE email = 'nikita@example.com'),
      'Уникальные адреса публикаций', 'unique-slugs',
-     'Зачем публикациям нужен уникальный slug.',
+     'Зачем публикациям нужен уникальный адрес.',
      'DRAFT', CURRENT_TIMESTAMP - INTERVAL '7 days', NULL),
     ((SELECT id FROM users WHERE email = 'leonid@example.com'),
      'Архитектура Repository', 'repository-pattern',
