@@ -12,7 +12,6 @@ import java.util.Objects;
 import java.util.Scanner;
 import java.util.function.Function;
 import java.util.stream.Collectors;
-import ru.mirea.blogplatform.exception.BlogPlatformException;
 import ru.mirea.blogplatform.exception.BusinessRuleException;
 import ru.mirea.blogplatform.model.BlogPost;
 import ru.mirea.blogplatform.model.PostStatus;
@@ -22,6 +21,26 @@ import ru.mirea.blogplatform.service.BlogStatistics;
 
 public class ConsoleUi {
     private static final DateTimeFormatter DATE_FORMAT = DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm");
+    private static final String MENU = """
+
+            === Блог-платформа ===
+             1. Создать публикацию
+             2. Показать все публикации
+             3. Найти публикацию по ID
+             4. Изменить публикацию
+             5. Удалить публикацию
+             6. Поиск по заголовку
+             7. Поиск по автору
+             8. Фильтр по статусу
+             9. Фильтр по автору
+            10. Сортировка по дате создания
+            11. Сортировка по заголовку
+            12. Изменить статус
+            13. Статистика
+            14. Показать авторов
+            15. Экспорт в Excel (.xlsx)
+             0. Выход
+            """;
 
     private final BlogPostService service;
     private final Scanner input;
@@ -37,21 +56,18 @@ public class ConsoleUi {
         while (true) {
             printMenu();
             try {
-                int command = Integer.parseInt(readLine("Выберите пункт: "));
+                int command = parseCommand(readLine("Выберите пункт: "));
                 if (command == 0) {
                     output.println("До свидания!");
                     return;
                 }
                 execute(command);
-            } catch (NoSuchElementException ex) {
-                output.println("\nВвод закрыт. Программа завершена.");
-                return;
-            } catch (NumberFormatException ex) {
-                output.println("Ошибка: введите целое число.");
-            } catch (BlogPlatformException | IllegalArgumentException ex) {
-                output.println("Ошибка: " + ex.getMessage());
             } catch (RuntimeException ex) {
-                output.println("Ошибка приложения или базы данных: " + ex.getMessage());
+                if (ex instanceof NoSuchElementException) {
+                    output.println("\nВвод закрыт. Программа завершена.");
+                    return;
+                }
+                output.println("Ошибка: " + errorMessage(ex));
             }
         }
     }
@@ -198,11 +214,23 @@ public class ConsoleUi {
     }
 
     private long parsePositiveLong(String value) {
-        long number = Long.parseLong(value.strip());
-        if (number <= 0) {
-            throw new BusinessRuleException("ID должен быть положительным числом.");
+        try {
+            long number = Long.parseLong(value.strip());
+            if (number <= 0) {
+                throw new BusinessRuleException("ID должен быть положительным числом.");
+            }
+            return number;
+        } catch (NumberFormatException ex) {
+            throw new BusinessRuleException("введите целое число.");
         }
-        return number;
+    }
+
+    private int parseCommand(String value) {
+        try {
+            return Integer.parseInt(value.strip());
+        } catch (NumberFormatException ex) {
+            throw new BusinessRuleException("введите целое число.");
+        }
     }
 
     private PostStatus readStatus(String prompt) {
@@ -227,23 +255,13 @@ public class ConsoleUi {
         return date == null ? "—" : date.format(DATE_FORMAT);
     }
 
+    private String errorMessage(RuntimeException exception) {
+        String message = exception.getMessage();
+        return message == null || message.isBlank()
+                ? "непредвиденная ошибка приложения." : message;
+    }
+
     private void printMenu() {
-        output.println("\n=== Блог-платформа ===");
-        output.println(" 1. Создать публикацию");
-        output.println(" 2. Показать все публикации");
-        output.println(" 3. Найти публикацию по ID");
-        output.println(" 4. Изменить публикацию");
-        output.println(" 5. Удалить публикацию");
-        output.println(" 6. Поиск по заголовку");
-        output.println(" 7. Поиск по автору");
-        output.println(" 8. Фильтр по статусу");
-        output.println(" 9. Фильтр по автору");
-        output.println("10. Сортировка по дате создания");
-        output.println("11. Сортировка по заголовку");
-        output.println("12. Изменить статус");
-        output.println("13. Статистика");
-        output.println("14. Показать авторов");
-        output.println("15. Экспорт в Excel (.xlsx)");
-        output.println(" 0. Выход");
+        output.println(MENU);
     }
 }
