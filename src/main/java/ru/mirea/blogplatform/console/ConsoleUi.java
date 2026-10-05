@@ -18,6 +18,8 @@ import ru.mirea.blogplatform.model.PostStatus;
 import ru.mirea.blogplatform.model.User;
 import ru.mirea.blogplatform.service.BlogPostService;
 import ru.mirea.blogplatform.service.BlogStatistics;
+import ru.mirea.blogplatform.service.CommentService;
+import ru.mirea.blogplatform.service.UserService;
 
 public class ConsoleUi {
     private static final DateTimeFormatter DATE_FORMAT = DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm");
@@ -39,17 +41,24 @@ public class ConsoleUi {
             13. Статистика
             14. Показать авторов
             15. Экспорт в Excel (.xlsx)
+            16. Управление авторами
+            17. Управление комментариями
              0. Выход
             """;
 
     private final BlogPostService service;
     private final Scanner input;
     private final PrintStream output;
+    private final UserConsoleUi userConsole;
+    private final CommentConsoleUi commentConsole;
 
-    public ConsoleUi(BlogPostService service, Scanner input, PrintStream output) {
+    public ConsoleUi(BlogPostService service, UserService userService,
+                     CommentService commentService, Scanner input, PrintStream output) {
         this.service = Objects.requireNonNull(service);
         this.input = Objects.requireNonNull(input);
         this.output = Objects.requireNonNull(output);
+        this.userConsole = new UserConsoleUi(userService, input, output);
+        this.commentConsole = new CommentConsoleUi(commentService, input, output);
     }
 
     public void run() {
@@ -91,6 +100,8 @@ public class ConsoleUi {
             case 13 -> printStatistics();
             case 14 -> printUsers();
             case 15 -> exportExcel();
+            case 16 -> userConsole.run();
+            case 17 -> commentConsole.run();
             default -> output.println("Такого пункта нет.");
         }
     }
@@ -185,7 +196,8 @@ public class ConsoleUi {
         }
         output.println("Авторы:");
         for (User user : users) {
-            output.printf("#%d | %s | %s%n", user.getId(), user.getName(), user.getEmail());
+            output.printf("#%d | %s | %s | %s%n", user.getId(), user.getName(),
+                    user.getEmail(), user.getRole().getDisplayName());
         }
     }
 

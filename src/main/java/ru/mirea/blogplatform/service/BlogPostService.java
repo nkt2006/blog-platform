@@ -15,6 +15,7 @@ import ru.mirea.blogplatform.model.BlogPost;
 import ru.mirea.blogplatform.model.PostStatus;
 import ru.mirea.blogplatform.model.User;
 import ru.mirea.blogplatform.repository.BlogPostRepository;
+import ru.mirea.blogplatform.repository.CommentRepository;
 import ru.mirea.blogplatform.repository.UserRepository;
 import ru.mirea.blogplatform.util.ExcelExporter;
 
@@ -29,10 +30,22 @@ public class BlogPostService {
     }
 
     public BlogPostService(BlogPostRepository posts, UserRepository users, Clock clock) {
+        this(posts, users, null, clock);
+    }
+
+    public BlogPostService(BlogPostRepository posts, UserRepository users,
+                           CommentRepository comments) {
+        this(posts, users, comments, Clock.systemDefaultZone());
+    }
+
+    public BlogPostService(BlogPostRepository posts, UserRepository users,
+                           CommentRepository comments, Clock clock) {
         this.posts = Objects.requireNonNull(posts);
         this.users = Objects.requireNonNull(users);
         this.clock = Objects.requireNonNull(clock);
-        this.exporter = new ExcelExporter(users, posts);
+        this.exporter = comments == null
+                ? new ExcelExporter(users, posts)
+                : new ExcelExporter(users, posts, comments);
     }
 
     public BlogPost createPost(long authorId, String title, String slug, String content) {

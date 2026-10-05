@@ -10,10 +10,66 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.EnabledIfEnvironmentVariable;
 import ru.mirea.blogplatform.config.DatabaseManager;
 import ru.mirea.blogplatform.model.BlogPost;
+import ru.mirea.blogplatform.model.Comment;
+import ru.mirea.blogplatform.model.CommentStatus;
 import ru.mirea.blogplatform.model.PostStatus;
+import ru.mirea.blogplatform.model.User;
+import ru.mirea.blogplatform.model.UserRole;
 
 @EnabledIfEnvironmentVariable(named = "BLOG_TEST_DB_URL", matches = ".+")
 class JdbcRepositoriesIntegrationTest {
+    @Test
+    void performsUserAndCommentCrudAgainstPostgres() {
+        DatabaseManager databaseManager = new DatabaseManager(
+                System.getenv("BLOG_TEST_DB_URL"),
+                System.getenv().getOrDefault("BLOG_TEST_DB_USER", "postgres"),
+                System.getenv().getOrDefault("BLOG_TEST_DB_PASSWORD", "")
+        );
+        JdbcUserRepository users = new JdbcUserRepository(databaseManager);
+        JdbcBlogPostRepository posts = new JdbcBlogPostRepository(databaseManager);
+        JdbcCommentRepository comments = new JdbcCommentRepository(databaseManager);
+
+        User author = users.create(new User(null, "Тестовый автор",
+                "integration-" + System.nanoTime() + "@example.com", UserRole.AUTHOR));
+        BlogPost post = null;
+        Comment comment = null;
+        try {
+            assertNotNull(author.getId());
+            assertTrue(users.existsByEmailAndIdNot(author.getEmail(), -1));
+            author.setRole(UserRole.EDITOR);
+            assertTrue(users.update(author));
+            assertEquals(UserRole.EDITOR, users.findById(author.getId()).orElseThrow().getRole());
+
+            post = posts.create(new BlogPost(null, author.getId(), "Тестовый пост",
+                    "comment-integration-" + System.nanoTime(), "Содержание",
+                    PostStatus.DRAFT, null, null));
+            comment = comments.create(new Comment(null, post.getId(), author.getId(),
+                    "Тестовый комментарий", CommentStatus.PENDING, LocalDateTime.now()));
+            assertNotNull(comment.getId());
+            long commentId = comment.getId();
+            assertEquals("Тестовый комментарий", comments.findById(comment.getId()).orElseThrow().getText());
+            assertTrue(comments.findAll().stream().anyMatch(item -> item.getId() == commentId));
+
+            comment.setText("Обновлённый комментарий");
+            comment.setStatus(CommentStatus.APPROVED);
+            assertTrue(comments.update(comment));
+            assertEquals(CommentStatus.APPROVED,
+                    comments.findById(comment.getId()).orElseThrow().getStatus());
+            assertTrue(comments.deleteById(comment.getId()));
+            assertFalse(comments.findById(comment.getId()).isPresent());
+            comment = null;
+        } finally {
+            if (comment != null) {
+                comments.deleteById(comment.getId());
+            }
+            if (post != null) {
+                posts.deleteById(post.getId());
+            }
+            users.deleteById(author.getId());
+        }
+        assertFalse(users.findById(author.getId()).isPresent());
+    }
+
     @Test
     void performsCrudAndSlugChecksAgainstPostgres() {
         DatabaseManager databaseManager = new DatabaseManager(

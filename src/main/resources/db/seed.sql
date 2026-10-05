@@ -53,4 +53,22 @@ VALUES
      'DRAFT', CURRENT_TIMESTAMP - INTERVAL '2 days', NULL)
 ON CONFLICT (slug) DO NOTHING;
 
+INSERT INTO comments (post_id, author_id, text, status, created_at) VALUES
+    ((SELECT id FROM blog_posts WHERE slug = 'blog-platform-architecture'),
+     (SELECT id FROM users WHERE email = 'nikita@example.com'),
+     'Хорошо показано разделение слоёв.', 'APPROVED', CURRENT_TIMESTAMP - INTERVAL '18 days'),
+    ((SELECT id FROM blog_posts WHERE slug = 'jdbc-basics'),
+     (SELECT id FROM users WHERE email = 'maxim@example.com'),
+     'Подскажите, зачем нужен PreparedStatement?', 'PENDING', CURRENT_TIMESTAMP - INTERVAL '16 days'),
+    ((SELECT id FROM blog_posts WHERE slug = 'java-collections'),
+     (SELECT id FROM users WHERE email = 'leonid@example.com'),
+     'Пример сортировки очень полезен.', 'APPROVED', CURRENT_TIMESTAMP - INTERVAL '13 days'),
+    ((SELECT id FROM blog_posts WHERE slug = 'excel-export'),
+     (SELECT id FROM users WHERE email = 'anna@example.com'),
+     'Где находится полученный файл?', 'PENDING', CURRENT_TIMESTAMP - INTERVAL '8 days'),
+    ((SELECT id FROM blog_posts WHERE slug = 'repository-pattern'),
+     (SELECT id FROM users WHERE email = 'ilya@example.com'),
+     'Комментарий для проверки отклонения.', 'REJECTED', CURRENT_TIMESTAMP - INTERVAL '4 days')
+ON CONFLICT (post_id, author_id, text) DO NOTHING;
+
 COMMIT;

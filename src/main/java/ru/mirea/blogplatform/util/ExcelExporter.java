@@ -19,24 +19,38 @@ import org.apache.poi.ss.util.CellRangeAddress;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import ru.mirea.blogplatform.exception.DataExportException;
 import ru.mirea.blogplatform.model.BlogPost;
+import ru.mirea.blogplatform.model.Comment;
 import ru.mirea.blogplatform.model.User;
 import ru.mirea.blogplatform.repository.BlogPostRepository;
+import ru.mirea.blogplatform.repository.CommentRepository;
 import ru.mirea.blogplatform.repository.UserRepository;
 
-/** Exports current repository data to a two-sheet Excel workbook. */
+/** Exports current repository data to an Excel workbook. */
 public class ExcelExporter {
-    private static final String[] USER_HEADERS = {"ID", "Имя", "Email"};
+    private static final String[] USER_HEADERS = {"ID", "Имя", "Email", "Роль"};
     private static final String[] POST_HEADERS = {
             "ID", "ID автора", "Заголовок", "Адрес публикации", "Статус",
             "Создано", "Опубликовано", "Содержимое"
     };
+    private static final String[] COMMENT_HEADERS = {
+            "ID", "ID публикации", "ID автора", "Текст", "Статус", "Создано"
+    };
 
     private final UserRepository userRepository;
     private final BlogPostRepository blogPostRepository;
+    private final CommentRepository commentRepository;
 
     public ExcelExporter(
             UserRepository userRepository,
             BlogPostRepository blogPostRepository
+    ) {
+        this(userRepository, blogPostRepository, null);
+    }
+
+    public ExcelExporter(
+            UserRepository userRepository,
+            BlogPostRepository blogPostRepository,
+            CommentRepository commentRepository
     ) {
         this.userRepository = Objects.requireNonNull(
                 userRepository, "Репозиторий авторов не указан"
@@ -44,6 +58,7 @@ public class ExcelExporter {
         this.blogPostRepository = Objects.requireNonNull(
                 blogPostRepository, "Репозиторий публикаций не указан"
         );
+        this.commentRepository = commentRepository;
     }
 
     public Path export(Path outputFile) {
@@ -61,6 +76,9 @@ public class ExcelExporter {
                 CellStyle dateTimeStyle = createDateTimeStyle(workbook);
                 writeUsers(workbook, userRepository.findAll(), headerStyle);
                 writePosts(workbook, blogPostRepository.findAll(), headerStyle, dateTimeStyle);
+                if (commentRepository != null) {
+                    writeComments(workbook, commentRepository.findAll(), headerStyle, dateTimeStyle);
+                }
 
                 try (OutputStream outputStream = Files.newOutputStream(absoluteOutput)) {
                     workbook.write(outputStream);
@@ -85,9 +103,30 @@ public class ExcelExporter {
             setLong(row, 0, user.getId());
             row.createCell(1).setCellValue(user.getName());
             row.createCell(2).setCellValue(user.getEmail());
+            row.createCell(3).setCellValue(user.getRole().getDisplayName());
         }
 
         finishSheet(sheet, USER_HEADERS.length, rowIndex);
+    }
+
+    private void writeComments(Workbook workbook, List<Comment> comments,
+                               CellStyle headerStyle, CellStyle dateTimeStyle) {
+        Sheet sheet = workbook.createSheet("Комментарии");
+        createHeader(sheet, COMMENT_HEADERS, headerStyle);
+
+        int rowIndex = 1;
+        for (Comment comment : comments) {
+            Row row = sheet.createRow(rowIndex++);
+            setLong(row, 0, comment.getId());
+            setLong(row, 1, comment.getPostId());
+            setLong(row, 2, comment.getAuthorId());
+            row.createCell(3).setCellValue(comment.getText());
+            row.createCell(4).setCellValue(comment.getStatus().getDisplayName());
+            setDateTime(row, 5, comment.getCreatedAt(), dateTimeStyle);
+        }
+
+        finishSheet(sheet, COMMENT_HEADERS.length, rowIndex);
+        sheet.setColumnWidth(3, 60 * 256);
     }
 
     private void writePosts(
