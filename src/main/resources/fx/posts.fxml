@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
+<VBox xmlns:fx="http://javafx.com/fxml/1" fx:controller="ru.mirea.blogplatform.fx.controller.PostsController" spacing="12" styleClass="workspace">
+    <padding><Insets top="20" right="24" bottom="20" left="24"/></padding>
+    <Label text="Публикации" styleClass="section-title"/>
+    <Label text="Создавайте черновики, отправляйте их на проверку и публикуйте. Для сортировки нажмите заголовок столбца." styleClass="muted" wrapText="true"/>
+    <TextField fx:id="searchField" promptText="Поиск по заголовку, тексту, адресу или имени автора"/>
+    <FlowPane hgap="10" vgap="10">
+        <ComboBox fx:id="statusFilter" promptText="Все статусы" prefWidth="170"/>
+        <ComboBox fx:id="authorFilter" promptText="Все авторы" prefWidth="260"/>
+        <Label text="Создано с"/>
+        <DatePicker fx:id="fromDate" prefWidth="145"/>
+        <Label text="по"/>
+        <DatePicker fx:id="toDate" prefWidth="145"/>
+        <Button text="Сбросить фильтры" onAction="#resetFilters"/>
+    </FlowPane>
+    <Label fx:id="filterError" styleClass="error-text" wrapText="true"/>
+    <TableView fx:id="table" VBox.vgrow="ALWAYS" prefHeight="400"/>
+    <HBox fx:id="actionBar" spacing="8" alignment="CENTER_LEFT">
+        <Button text="Добавить публикацию" onAction="#add" styleClass="primary-button"/>
+        <Button fx:id="editButton" text="Изменить" onAction="#edit"/>
+        <Button fx:id="detailsButton" text="Читать" onAction="#details"/>
+        <Button fx:id="statusButton" text="Изменить статус" onAction="#changeStatus"/>
+        <Button fx:id="deleteButton" text="Удалить" onAction="#delete" styleClass="danger-button"/>
+        <Region HBox.hgrow="ALWAYS"/>
+        <Label fx:id="countLabel" text="Показано 0" styleClass="muted"/>
+    </HBox>
+</VBox>

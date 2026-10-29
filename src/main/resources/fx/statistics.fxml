@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.chart.*?>
+<?import javafx.geometry.Insets?>
+<ScrollPane xmlns:fx="http://javafx.com/fxml/1" fx:controller="ru.mirea.blogplatform.fx.controller.StatisticsController" fitToWidth="true">
+    <content>
+        <VBox spacing="20" styleClass="workspace">
+            <padding><Insets top="24" right="24" bottom="24" left="24"/></padding>
+            <Label text="Статистика блога" styleClass="section-title"/>
+            <Label text="Показатели рассчитываются по всем данным базы и обновляются после сохранения записей." styleClass="muted" wrapText="true"/>
+            <FlowPane hgap="14" vgap="14">
+                <VBox spacing="8" styleClass="metric-card"><Label text="Всего публикаций" styleClass="muted"/><Label fx:id="totalValue" text="0" styleClass="metric-value"/></VBox>
+                <VBox spacing="8" styleClass="metric-card"><Label text="Опубликовано" styleClass="muted"/><Label fx:id="publishedValue" text="0" styleClass="metric-value"/></VBox>
+                <VBox spacing="8" styleClass="metric-card"><Label text="Черновиков" styleClass="muted"/><Label fx:id="draftsValue" text="0" styleClass="metric-value"/></VBox>
+                <VBox spacing="8" styleClass="metric-card"><Label text="Авторов с публикациями" styleClass="muted"/><Label fx:id="authorsValue" text="0" styleClass="metric-value"/></VBox>
+                <VBox spacing="8" styleClass="metric-card"><Label text="Средняя длина текста" styleClass="muted"/><Label fx:id="averageValue" text="0" styleClass="metric-value"/><Label text="символов" styleClass="muted"/></VBox>
+            </FlowPane>
+            <Label fx:id="relatedLabel" text="Авторов: 0 • Комментариев: 0"/>
+            <BarChart fx:id="statusChart" title="Публикации по статусам" legendVisible="false" animated="false" prefHeight="340" minHeight="300">
+                <xAxis><CategoryAxis/></xAxis>
+                <yAxis><NumberAxis label="Количество" forceZeroInRange="true" tickUnit="1" minorTickVisible="false"/></yAxis>
+            </BarChart>
+        </VBox>
+    </content>
+</ScrollPane>

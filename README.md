@@ -1,10 +1,23 @@
-# Блог-платформа — КР №1
+# Блог-платформа — КР №1 и КР №2
 
-Консольное Java-приложение для работы с авторами, публикациями и комментариями блога. Архитектура: консольный интерфейс → сервисы → интерфейсы репозиториев → JDBC → PostgreSQL. Экспорт `.xlsx` выполняется через Apache POI.
+Настольное JavaFX-приложение для работы с авторами, публикациями и комментариями блога. Архитектура: FXML / Controller → Service → Repository / JDBC → PostgreSQL. Консоль КР №1 сохранена. Экспорт текущего списка поддерживает `.xlsx` и `.csv`.
+
+## Быстрый запуск КР №2
+
+Нужны Java 21, Maven 3.9+ и PostgreSQL из КР №1. На этом Mac:
+
+```bash
+cd ~/Desktop/blog-platform
+./run.sh
+```
+
+На других компьютерах с Java 21: `mvn javafx:run`.
+Настройки находятся в `src/main/resources/database.properties`; локальные значения задаются в `database.local.properties` или переменными `BLOG_DB_*`.
+Инструкция и сценарий защиты: [docs/kr2-guide.md](docs/kr2-guide.md). Обязательный пример Docker: [docs/docker-reference.md](docs/docker-reference.md).
 
 ## Общий контракт
 
-- Java 17, Maven, PostgreSQL, JDBC и Apache POI для `.xlsx`.
+- Java 21, JavaFX 21, FXML, CSS, Maven, PostgreSQL, JDBC и Apache POI для `.xlsx`.
 - Пакет `ru.mirea.blogplatform.model`: `User`, `BlogPost`, `Comment` и их перечисления `UserRole`, `PostStatus`, `CommentStatus`.
 - `BlogPost.authorId` ссылается на `User.id`; в БД этому соответствует `blog_posts.author_id → users.id`.
 - `BlogPost.id` равен `null` до создания записи. Метод `BlogPostRepository.create` возвращает пост с полученным из БД ID.
@@ -18,7 +31,8 @@
 
 | Компонент | Ответственность |
 | --- | --- |
-| `ConsoleUi`, `UserConsoleUi`, `CommentConsoleUi` | циклические меню, ввод, вывод, обработка ошибок |
+| `fx/controller/`, `fx/form/`, `resources/fx/` | графические таблицы и формы, FXML и CSS |
+| `ConsoleUi`, `UserConsoleUi`, `CommentConsoleUi` | дополнительный консольный интерфейс КР №1 |
 | `BlogPostService`, `UserService`, `CommentService` | бизнес-правила, CRUD, поиск, фильтры и сортировки |
 | `JdbcUserRepository`, `JdbcBlogPostRepository`, `JdbcCommentRepository` | параметризованные SQL-запросы и преобразование строк БД в объекты |
 | `ExcelExporter` | экспорт авторов, публикаций и комментариев в Excel |
@@ -27,12 +41,12 @@
 
 ## Настройка PostgreSQL
 
-Для запуска нужны JDK 17, Maven и PostgreSQL. По умолчанию приложение подключается к `jdbc:postgresql://localhost:5432/blog_platform` с пользователем `postgres` и паролем `postgres`. Настройки можно переопределить переменными окружения:
+По умолчанию приложение подключается к `jdbc:postgresql://localhost:5432/blog_platform` с пользователем `postgres`. Пароль задайте в локальном файле настроек или переменной окружения; в Java-коде он отсутствует. Настройки можно переопределить переменными окружения:
 
 ```shell
 export BLOG_DB_URL='jdbc:postgresql://localhost:5432/blog_platform'
 export BLOG_DB_USER='postgres'
-export BLOG_DB_PASSWORD='postgres'
+export BLOG_DB_PASSWORD='ваш_локальный_пароль'
 ```
 
 Создайте базу и примените схему с начальными данными:
@@ -45,13 +59,14 @@ psql -U postgres -d blog_platform -f src/main/resources/db/seed.sql
 
 Оба SQL-скрипта можно запускать повторно: таблицы создаются через `IF NOT EXISTS`, а уже существующие записи начального набора не перезаписываются. Начальный набор содержит 5 авторов, 10 публикаций и 5 комментариев с разными статусами. `schema.sql` добавляет поле роли и в базу, созданную прежней версией проекта.
 
-Запуск приложения из корня проекта:
+Запуск дополнительной консольной версии КР №1 из корня проекта:
 
 ```shell
 mvn compile exec:java
 ```
 
-Пункт `16` открывает меню авторов, пункт `17` — меню комментариев. У публикаций прямые и обратные сортировки находятся в основном меню. Пункт `15` создаёт Excel-файл с тремя листами. Если оставить путь пустым, он будет сохранён в `exports/blog-platform.xlsx`. Образец экспорта начальных данных находится в `docs/sample-blog-platform.xlsx`.
+В консольной версии пункт `16` открывает меню авторов, пункт `17` — меню комментариев; пункт `15` экспортирует все данные в Excel с тремя листами. Образец начальных данных находится в `docs/sample-blog-platform.xlsx`.
+В JavaFX используются вкладки. Кнопка «Экспорт текущего списка» открывает FileChooser и сохраняет видимые строки активной таблицы в XLSX или CSV.
 
 ## JDBC и экспорт
 

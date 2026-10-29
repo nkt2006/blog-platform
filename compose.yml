@@ -1,0 +1,21 @@
+name: blog-platform
+services:
+  db:
+    image: postgres:14-alpine
+    environment:
+      POSTGRES_DB: blog_platform
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: ${BLOG_POSTGRES_PASSWORD:?Set BLOG_POSTGRES_PASSWORD in .env}
+    ports:
+      - "127.0.0.1:${BLOG_POSTGRES_PORT:-55433}:5432"
+    volumes:
+      - blog_postgres:/var/lib/postgresql/data
+      - ./src/main/resources/db/schema.sql:/docker-entrypoint-initdb.d/01-schema.sql:ro
+      - ./src/main/resources/db/seed.sql:/docker-entrypoint-initdb.d/02-seed.sql:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d blog_platform"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+volumes:
+  blog_postgres:

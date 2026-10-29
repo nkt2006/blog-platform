@@ -51,6 +51,7 @@ public class BlogPostService {
     public BlogPost createPost(long authorId, String title, String slug, String content) {
         requireAuthor(authorId);
         String validTitle = requireText(title, "Заголовок");
+        requireLength(validTitle, 200, "Заголовок");
         String validContent = requireText(content, "Текст публикации");
         String validSlug = requireSlug(slug);
         if (posts.existsBySlug(validSlug)) {
@@ -66,6 +67,7 @@ public class BlogPostService {
         BlogPost current = getPostById(id);
         requireAuthor(authorId);
         String validTitle = requireText(title, "Заголовок");
+        requireLength(validTitle, 200, "Заголовок");
         String validContent = requireText(content, "Текст публикации");
         String validSlug = requireSlug(slug);
         if (posts.existsBySlugAndIdNot(validSlug, id)) {
@@ -200,6 +202,7 @@ public class BlogPostService {
 
     private String requireSlug(String value) {
         String slug = requireText(value, "Адрес публикации").toLowerCase(Locale.ROOT);
+        requireLength(slug, 200, "Адрес публикации");
         if (!slug.matches("[\\p{L}\\p{N}]+(?:-[\\p{L}\\p{N}]+)*")) {
             throw new BusinessRuleException(
                     "Адрес публикации может содержать буквы, цифры и дефисы между словами."
@@ -212,6 +215,12 @@ public class BlogPostService {
         return (current == PostStatus.DRAFT && next == PostStatus.REVIEW)
                 || (current == PostStatus.REVIEW && next == PostStatus.PUBLISHED)
                 || (current == PostStatus.PUBLISHED && next == PostStatus.ARCHIVED);
+    }
+
+    private void requireLength(String value, int limit, String field) {
+        if (value.length() > limit) {
+            throw new BusinessRuleException(field + ": не более " + limit + " символов.");
+        }
     }
 
     private EntityNotFoundException missingPost(long id) {

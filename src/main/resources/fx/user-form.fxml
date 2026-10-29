@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
+<VBox xmlns:fx="http://javafx.com/fxml/1" fx:controller="ru.mirea.blogplatform.fx.form.UserFormController" spacing="10" prefWidth="510">
+    <padding><Insets top="12" right="12" bottom="12" left="12"/></padding>
+    <Label text="Все поля обязательны" styleClass="muted"/>
+    <Label text="Имя (до 120 символов)"/><TextField fx:id="nameField" promptText="Имя и фамилия автора"/>
+    <Label text="Email (до 255 символов)"/><TextField fx:id="emailField" promptText="author@example.com"/>
+    <Label text="Роль"/><ComboBox fx:id="roleBox" maxWidth="Infinity"/>
+    <Label fx:id="errorLabel" styleClass="error-text" wrapText="true" minHeight="32" maxWidth="480"/>
+</VBox>

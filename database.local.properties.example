@@ -1,0 +1,4 @@
+# Скопируйте в database.local.properties. Этот локальный файл не попадает в Git.
+db.url=jdbc:postgresql://localhost:5432/blog_platform
+db.user=postgres
+db.password=

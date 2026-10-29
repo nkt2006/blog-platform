@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
+<BorderPane xmlns:fx="http://javafx.com/fxml/1" fx:controller="ru.mirea.blogplatform.fx.controller.MainController" styleClass="app-root">
+    <top>
+        <VBox spacing="12" styleClass="app-header">
+            <padding><Insets top="20" right="24" bottom="18" left="24"/></padding>
+            <HBox alignment="CENTER_LEFT" spacing="16">
+                <VBox spacing="4">
+                    <Label text="Блог-платформа" styleClass="app-title"/>
+                    <Label text="Публикации, авторы и обсуждения — в одном рабочем пространстве" styleClass="muted"/>
+                </VBox>
+                <Region HBox.hgrow="ALWAYS"/>
+                <Button fx:id="refreshButton" text="Обновить данные" onAction="#refresh"/>
+                <Button fx:id="exportButton" text="Экспорт текущего списка" onAction="#export" styleClass="primary-button"/>
+            </HBox>
+        </VBox>
+    </top>
+    <center>
+        <TabPane fx:id="tabs" tabClosingPolicy="UNAVAILABLE">
+            <tabs>
+                <Tab text="Публикации"><content><fx:include fx:id="postsView" source="posts.fxml"/></content></Tab>
+                <Tab text="Авторы"><content><fx:include fx:id="usersView" source="users.fxml"/></content></Tab>
+                <Tab text="Комментарии"><content><fx:include fx:id="commentsView" source="comments.fxml"/></content></Tab>
+                <Tab fx:id="statisticsTab" text="Статистика"><content><fx:include fx:id="statisticsView" source="statistics.fxml"/></content></Tab>
+            </tabs>
+        </TabPane>
+    </center>
+    <bottom>
+        <HBox alignment="CENTER_LEFT" spacing="10" styleClass="status-bar">
+            <padding><Insets top="10" right="24" bottom="10" left="24"/></padding>
+            <ProgressIndicator fx:id="progress" prefWidth="18" prefHeight="18"/>
+            <Label fx:id="statusLabel" text="Подключение к PostgreSQL…" wrapText="true"/>
+        </HBox>
+    </bottom>
+</BorderPane>

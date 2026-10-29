@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
+<VBox xmlns:fx="http://javafx.com/fxml/1" fx:controller="ru.mirea.blogplatform.fx.controller.UsersController" spacing="12" styleClass="workspace">
+    <padding><Insets top="20" right="24" bottom="20" left="24"/></padding>
+    <Label text="Авторы" styleClass="section-title"/>
+    <Label text="Управляйте авторами и редакторами. Email должен быть уникальным." styleClass="muted"/>
+    <HBox spacing="10">
+        <TextField fx:id="searchField" promptText="Поиск по имени или email" HBox.hgrow="ALWAYS"/>
+        <ComboBox fx:id="roleFilter" promptText="Все роли" prefWidth="200"/>
+        <Button text="Сбросить фильтры" onAction="#resetFilters"/>
+    </HBox>
+    <Label fx:id="filterError" styleClass="error-text"/>
+    <TableView fx:id="table" VBox.vgrow="ALWAYS" prefHeight="400"/>
+    <HBox fx:id="actionBar" spacing="8" alignment="CENTER_LEFT">
+        <Button text="Добавить автора" onAction="#add" styleClass="primary-button"/>
+        <Button fx:id="editButton" text="Изменить" onAction="#edit"/>
+        <Button fx:id="deleteButton" text="Удалить" onAction="#delete" styleClass="danger-button"/>
+        <Region HBox.hgrow="ALWAYS"/>
+        <Label fx:id="countLabel" text="Показано 0" styleClass="muted"/>
+    </HBox>
+</VBox>

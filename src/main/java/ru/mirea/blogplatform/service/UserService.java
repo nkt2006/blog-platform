@@ -80,7 +80,12 @@ public class UserService {
         if (value == null || value.isBlank()) {
             throw new UserException(field + " не может быть пустым.");
         }
-        return value.strip();
+        String text = value.strip();
+        int limit = field.equals("Имя") ? 120 : 255;
+        if (text.length() > limit) {
+            throw new UserException(field + ": не более " + limit + " символов.");
+        }
+        return text;
     }
 
     private String validEmail(String value) {

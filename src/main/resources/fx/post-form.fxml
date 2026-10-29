@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
+<VBox xmlns:fx="http://javafx.com/fxml/1" fx:controller="ru.mirea.blogplatform.fx.form.PostFormController" spacing="9" prefWidth="630">
+    <padding><Insets top="12" right="12" bottom="12" left="12"/></padding>
+    <Label text="Все поля обязательны" styleClass="muted"/>
+    <Label text="Автор"/><ComboBox fx:id="authorBox" promptText="Выберите автора" maxWidth="Infinity"/>
+    <Label text="Заголовок (до 200 символов)"/><TextField fx:id="titleField" promptText="Например: Знакомство с JavaFX"/>
+    <Label text="Адрес публикации (до 200 символов)"/><TextField fx:id="slugField" promptText="Например: javafx-introduction"/>
+    <Label text="Текст публикации"/><TextArea fx:id="contentField" wrapText="true" prefRowCount="8" prefHeight="210" VBox.vgrow="ALWAYS"/>
+    <Label fx:id="statusLabel" styleClass="muted"/>
+    <Label fx:id="errorLabel" styleClass="error-text" wrapText="true" minHeight="32" maxWidth="600"/>
+</VBox>

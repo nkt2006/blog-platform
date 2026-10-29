@@ -62,6 +62,12 @@ class BlogPostServiceTest {
     }
 
     @Test
+    void rejectsTitlesAndSlugsLongerThanDatabaseLimits() {
+        assertThrows(BusinessRuleException.class, () -> service.createPost(1, "x".repeat(201), "post", "Текст"));
+        assertThrows(BusinessRuleException.class, () -> service.createPost(1, "Пост", "x".repeat(201), "Текст"));
+    }
+
+    @Test
     void editingSearchingFilteringSortingAndStatisticsWork() {
         BlogPost java = service.createPost(1, "Java Guide", "java-guide", "1234");
         BlogPost sql = service.createPost(2, "SQL Notes", "sql-notes", "123456");

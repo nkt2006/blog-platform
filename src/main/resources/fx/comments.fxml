@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
+<VBox xmlns:fx="http://javafx.com/fxml/1" fx:controller="ru.mirea.blogplatform.fx.controller.CommentsController" spacing="12" styleClass="workspace">
+    <padding><Insets top="20" right="24" bottom="20" left="24"/></padding>
+    <Label text="Комментарии" styleClass="section-title"/>
+    <Label text="Новые комментарии проходят модерацию: их можно одобрить или отклонить." styleClass="muted"/>
+    <TextField fx:id="searchField" promptText="Поиск по тексту, публикации или имени автора"/>
+    <FlowPane hgap="10" vgap="10">
+        <ComboBox fx:id="statusFilter" promptText="Все статусы" prefWidth="170"/>
+        <ComboBox fx:id="postFilter" promptText="Все публикации" prefWidth="310"/>
+        <ComboBox fx:id="authorFilter" promptText="Все авторы" prefWidth="220"/>
+        <Button text="Сбросить фильтры" onAction="#resetFilters"/>
+    </FlowPane>
+    <Label fx:id="filterError" styleClass="error-text"/>
+    <TableView fx:id="table" VBox.vgrow="ALWAYS" prefHeight="400"/>
+    <HBox fx:id="actionBar" spacing="8" alignment="CENTER_LEFT">
+        <Button text="Добавить комментарий" onAction="#add" styleClass="primary-button"/>
+        <Button fx:id="editButton" text="Изменить" onAction="#edit"/>
+        <Button fx:id="statusButton" text="Модерация" onAction="#changeStatus"/>
+        <Button fx:id="deleteButton" text="Удалить" onAction="#delete" styleClass="danger-button"/>
+        <Region HBox.hgrow="ALWAYS"/>
+        <Label fx:id="countLabel" text="Показано 0" styleClass="muted"/>
+    </HBox>
+</VBox>
